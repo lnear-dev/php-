@@ -1,0 +1,67 @@
+{
+  "version": 4,
+  "configurePresets": [
+    {
+      "name": "all-disabled",
+      "displayName": "All extensions disabled",
+      "description": "PHP configuration with all PHP extensions and SAPIs disabled, only with CLI SAPI",
+      "binaryDir": "${sourceDir}/php-build/all-disabled",
+      "installDir": "/tmp",
+      "cacheVariables": {
+        "EXT_CTYPE": false,
+        "EXT_DOM": false,
+        "EXT_FILEINFO": false,
+        "EXT_FILTER": false,
+        "EXT_ICONV": false,
+        "EXT_LIBXML": false,
+        "EXT_OPCACHE": false,
+        "EXT_PDO": false,
+        "EXT_PDO_SQLITE": false,
+        "EXT_PHAR": false,
+        "EXT_POSIX": false,
+        "EXT_SESSION": false,
+        "EXT_SIMPLEXML": false,
+        "EXT_SQLITE3": false,
+        "EXT_TOKENIZER": false,
+        "EXT_XML": false,
+        "EXT_XMLREADER": false,
+        "EXT_XMLWRITER": false,
+
+        "SAPI_CGI": false,
+        "SAPI_PHPDBG": false
+      }
+    },
+    {
+      "name": "all-disabled-ts",
+      "inherits": "all-disabled",
+      "displayName": "Thread safety (ZTS) with all extensions disabled",
+      "description": "PHP thread safe (ZTS) build with all PHP extensions and SAPIs disabled, only with CLI SAPI",
+      "binaryDir": "${sourceDir}/php-build/all-disabled-ts",
+      "cacheVariables": {
+        "PHP_THREAD_SAFETY": true
+      }
+    },
+    {
+      "name": "all-disabled-ninja",
+      "inherits": "all-disabled",
+      "displayName": "Ninja generator with all extensions disabled",
+      "description": "PHP build using Ninja generator with all PHP extensions and SAPIs disabled, only with CLI SAPI",
+      "binaryDir": "${sourceDir}/php-build/all-disabled-ninja",
+      "generator": "Ninja"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "all-disabled",
+      "configurePreset": "all-disabled"
+    },
+    {
+      "name": "all-disabled-ts",
+      "configurePreset": "all-disabled-ts"
+    },
+    {
+      "name": "all-disabled-ninja",
+      "configurePreset": "all-disabled-ninja"
+    }
+  ]
+}

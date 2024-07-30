@@ -1,0 +1,97 @@
+# CMakeLists.txt file for the %EXTNAME% extension.
+
+# Set minimum required CMake version.
+cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
+
+# Append extension's local CMake modules.
+if(NOT ${CMAKE_CURRENT_LIST_DIR}/cmake/modules IN_LIST CMAKE_MODULE_PATH)
+  list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/modules)
+endif()
+
+# Set the extension project metadata.
+project(
+  %EXTNAME%
+  VERSION 0.1.0
+  DESCRIPTION "Describe the extension"
+  HOMEPAGE_URL "https://example.org"
+  LANGUAGES C
+)
+
+# Include CMake module to use cmake_dependent_option().
+include(CMakeDependentOption)
+
+# Include CMake module to use add_feature_info() and set_package_properties().
+include(FeatureSummary)
+
+# Boolean option that enables (ON) or disables (OFF) the extension.
+option(EXT_%EXTNAMECAPS% "Enable the %EXTNAME% extension" OFF)
+
+# Extension features are visible in the configuration summary output.
+add_feature_info(
+  "ext/%EXTNAME%"
+  EXT_%EXTNAMECAPS%
+  "Describe the extension features"
+)
+
+# Dependent boolean option that builds extension as a shared library. CMake's
+# BUILD_SHARED_LIBS variable hides this option and builds extension as shared.
+cmake_dependent_option(
+  EXT_%EXTNAMECAPS%_SHARED
+  "Build the %EXTNAME% extension as a shared library"
+  OFF
+  "EXT_%EXTNAMECAPS%;NOT BUILD_SHARED_LIBS"
+  OFF
+)
+
+# If extension is disabled CMake configuration stops here.
+if(NOT EXT_%EXTNAMECAPS%)
+  return()
+endif()
+
+# Add a target to be built as a SHARED or STATIC library.
+if(EXT_%EXTNAMECAPS%_SHARED)
+  add_library(php_%EXTNAME% SHARED)
+else()
+  add_library(php_%EXTNAME%)
+endif()
+
+# Add library target sources.
+target_sources(
+  php_%EXTNAME%
+  PRIVATE
+    %EXTNAME%.c
+  # Add headers to a file set, if extension provides headers that should be
+  # installed and will be consumed by other sources.
+  PUBLIC
+    FILE_SET HEADERS
+      FILES
+        php_%EXTNAME%.h
+)
+
+# Add compile definitions.
+target_compile_definitions(
+  php_%EXTNAME%
+  PRIVATE
+    # Enable "Thread Safety Resource Manager Local Storage" static cache.
+    ZEND_ENABLE_STATIC_TSRMLS_CACHE=1
+)
+
+# Configure extension as Zend extension. Zend extensions are loaded with the
+# 'zend_extension' INI directive and include additional advanced hooks. Use only
+# when building advanced extensions, such as debuggers, profilers, caching, etc.
+#set_target_properties(php_%EXTNAME% PROPERTIES PHP_ZEND_EXTENSION TRUE)
+
+# Find PHP package on the system.
+find_package(PHP REQUIRED)
+
+# The PHP::PHP library contains INTERFACE include directories for the extension.
+# Link PHP and extension targets.
+target_link_libraries(php_%EXTNAME% PRIVATE PHP::PHP)
+
+# Install files to system destinations when running 'cmake --install'.
+install(
+  TARGETS php_%EXTNAME%
+  ARCHIVE EXCLUDE_FROM_ALL
+  FILE_SET HEADERS
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ext/%EXTNAME%
+)

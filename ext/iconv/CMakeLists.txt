@@ -1,0 +1,234 @@
+include(CheckLibraryExists)
+include(CheckSourceRuns)
+include(CheckSymbolExists)
+include(CMakeDependentOption)
+include(CMakePushCheckState)
+include(FeatureSummary)
+
+option(EXT_ICONV "Enable the iconv extension" ON)
+
+add_feature_info(
+  "ext/iconv"
+  EXT_ICONV
+  "Support for interface to iconv character set conversion facility"
+)
+
+cmake_dependent_option(
+  EXT_ICONV_SHARED
+  "Build the iconv extension as a shared library"
+  OFF
+  "EXT_ICONV;NOT BUILD_SHARED_LIBS"
+  OFF
+)
+
+if(NOT EXT_ICONV)
+  return()
+endif()
+
+if(EXT_ICONV_SHARED)
+  add_library(php_iconv SHARED)
+else()
+  add_library(php_iconv)
+endif()
+
+target_sources(
+  php_iconv
+  PRIVATE
+    iconv.c
+    php_iconv.def
+  PUBLIC
+    FILE_SET HEADERS
+      FILES
+        php_iconv.h
+)
+
+target_compile_definitions(
+  php_iconv
+  PRIVATE
+    ZEND_ENABLE_STATIC_TSRMLS_CACHE=1
+    $<$<PLATFORM_ID:Windows>:PHP_ICONV_EXPORTS>
+)
+
+find_package(Iconv)
+set_package_properties(
+  Iconv
+  PROPERTIES
+    TYPE REQUIRED
+    PURPOSE "Necessary to enable the iconv extension."
+)
+
+target_link_libraries(php_iconv PRIVATE Iconv::Iconv)
+
+if(TARGET Iconv::Iconv)
+  # Sanity and library type checks.
+  if(Iconv_IS_BUILT_IN)
+    # When iconv is built into C library, first check if iconv function exists.
+    check_symbol_exists(iconv "iconv.h" HAVE_ICONV)
+
+    # And if not, then check for libiconv function.
+    if(NOT HAVE_ICONV)
+      check_symbol_exists(libiconv "iconv.h" HAVE_LIBICONV)
+    endif()
+  else()
+    check_library_exists(Iconv::Iconv libiconv "" HAVE_LIBICONV)
+
+    if(HAVE_LIBICONV)
+      set(
+        ICONV_ALIASED_LIBICONV 1
+        CACHE INTERNAL "iconv() is aliased to libiconv() in -liconv"
+      )
+    else()
+      check_library_exists(Iconv::Iconv iconv "" HAVE_ICONV)
+    endif()
+  endif()
+
+  if(NOT HAVE_ICONV AND NOT HAVE_LIBICONV)
+    message(
+      FATAL_ERROR
+      "The iconv sanity check failed. Neither iconv or libiconv could be found."
+    )
+  endif()
+
+  message(CHECK_START "Checking the iconv implementation")
+
+  # Check for GNU libiconv implementation.
+  cmake_push_check_state(RESET)
+    set(CMAKE_REQUIRED_LIBRARIES Iconv::Iconv)
+    set(CMAKE_REQUIRED_QUIET TRUE)
+    check_symbol_exists(_libiconv_version "iconv.h" _have_gnu_libiconv)
+  cmake_pop_check_state()
+  if(_have_gnu_libiconv)
+    message(CHECK_PASS "GNU libiconv")
+    set(HAVE_LIBICONV 1 CACHE INTERNAL "")
+    set(
+      PHP_ICONV_IMPL "libiconv"
+      CACHE INTERNAL "The iconv library implementation"
+    )
+  endif()
+
+  # Check for glibc implementation.
+  if(NOT _have_gnu_libiconv)
+    cmake_push_check_state(RESET)
+      set(CMAKE_REQUIRED_LIBRARIES Iconv::Iconv)
+      set(CMAKE_REQUIRED_QUIET TRUE)
+      check_symbol_exists(gnu_get_libc_version gnu/libc-version.h HAVE_GLIBC_ICONV)
+    cmake_pop_check_state()
+  endif()
+  if(HAVE_GLIBC_ICONV)
+    message(CHECK_PASS "GNU C library")
+    set(
+      PHP_ICONV_IMPL "glibc"
+      CACHE INTERNAL "The iconv library implementation"
+    )
+  endif()
+
+  # Check for Konstantin Chuguev's iconv implementation.
+  if(NOT _have_gnu_libiconv AND NOT HAVE_GLIBC_ICONV)
+    cmake_push_check_state(RESET)
+      set(CMAKE_REQUIRED_LIBRARIES Iconv::Iconv)
+      set(CMAKE_REQUIRED_QUIET TRUE)
+      check_symbol_exists(iconv_ccs_init iconv.h _have_bsd_iconv)
+    cmake_pop_check_state()
+  endif()
+  if(_have_bsd_iconv)
+    message(CHECK_PASS "BSD iconv")
+    set(
+      PHP_ICONV_IMPL "BSD iconv"
+      CACHE INTERNAL "The iconv library implementation"
+    )
+  endif()
+
+  # Check for IBM iconv implementation.
+  if(NOT _have_gnu_libiconv AND NOT HAVE_GLIBC_ICONV AND NOT _have_bsd_iconv)
+    cmake_push_check_state(RESET)
+      set(CMAKE_REQUIRED_LIBRARIES Iconv::Iconv)
+      set(CMAKE_REQUIRED_QUIET TRUE)
+      check_symbol_exists(cstoccsid iconv.h HAVE_IBM_ICONV)
+    cmake_pop_check_state()
+  endif()
+  if(HAVE_IBM_ICONV)
+    message(CHECK_PASS "IBM iconv")
+    set(
+      PHP_ICONV_IMPL "IBM iconv"
+      CACHE INTERNAL "The iconv library implementation"
+    )
+  endif()
+
+  if(NOT PHP_ICONV_IMPL)
+    message(CHECK_FAIL "not found, unknown")
+  endif()
+
+  # Sanity check. Check if iconv supports errno.
+  message(CHECK_START "Checking if iconv supports errno")
+  if(CMAKE_CROSSCOMPILING)
+    set(_php_iconv_errno_works 1)
+  else()
+    cmake_push_check_state(RESET)
+      set(CMAKE_REQUIRED_LIBRARIES Iconv::Iconv)
+      set(CMAKE_REQUIRED_QUIET TRUE)
+
+      check_source_runs(C [[
+        #include <iconv.h>
+        #include <errno.h>
+
+        int main(void) {
+          iconv_t cd;
+          cd = iconv_open("*blahblah*", "*blahblahblah*");
+          if (cd == (iconv_t)(-1)) {
+            if (errno == EINVAL) {
+              return 0;
+            } else {
+              return 1;
+            }
+          }
+          iconv_close(cd);
+          return 2;
+        }
+      ]] _php_iconv_errno_works)
+    cmake_pop_check_state()
+  endif()
+
+  if(_php_iconv_errno_works)
+    message(CHECK_PASS "yes")
+  else()
+    message(
+      FATAL_ERROR
+      "The iconv errno sanity check failed. Please check logs for details."
+    )
+  endif()
+
+  message(CHECK_START "Checking if iconv supports //IGNORE")
+  if(NOT CMAKE_CROSSCOMPILING)
+    cmake_push_check_state(RESET)
+      set(CMAKE_REQUIRED_LIBRARIES Iconv::Iconv)
+      set(CMAKE_REQUIRED_QUIET TRUE)
+
+      check_source_runs(C [[
+        #include <iconv.h>
+        #include <stdlib.h>
+
+        int main(void) {
+          iconv_t cd = iconv_open("UTF-8//IGNORE", "UTF-8");
+          if(cd == (iconv_t)-1) {
+            return 1;
+          }
+          char *in_p = "\xC3\xC3\xC3\xB8";
+          size_t in_left = 4, out_left = 4096;
+          char *out = malloc(out_left);
+          char *out_p = out;
+          size_t result = iconv(cd, (char **) &in_p, &in_left, (char **) &out_p, &out_left);
+          if(result == (size_t)-1) {
+            return 1;
+          }
+          return 0;
+        }
+      ]] _php_iconv_ignore_works)
+    cmake_pop_check_state()
+  endif()
+  if(_php_iconv_ignore_works)
+    message(CHECK_PASS "yes")
+  else()
+    message(CHECK_FAIL "no")
+    set(ICONV_BROKEN_IGNORE 1 CACHE INTERNAL "Whether iconv has broken IGNORE.")
+  endif()
+endif()

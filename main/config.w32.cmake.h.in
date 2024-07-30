@@ -1,0 +1,567 @@
+/* Build Configuration Template for Win32. */
+
+/* Define the minimum supported version */
+#undef _WIN32_WINNT
+#undef NTDDI_VERSION
+#define _WIN32_WINNT 0x0602
+#define NTDDI_VERSION 0x06010000
+
+/* Default PHP / PEAR directories */
+#define PHP_CONFIG_FILE_PATH ""
+#define PEAR_INSTALLDIR "@PREFIX@\\pear"
+#define PHP_BINDIR "@PREFIX@"
+#define PHP_SBINDIR "@PREFIX@"
+#define PHP_DATADIR "@PREFIX@"
+#define PHP_EXTENSION_DIR "@PREFIX@\\ext"
+#define PHP_INCLUDE_PATH ".;@PREFIX@\\pear"
+#define PHP_LIBDIR "@PREFIX@"
+#define PHP_LOCALSTATEDIR "@PREFIX@"
+#define PHP_PREFIX "@PREFIX@"
+#define PHP_SYSCONFDIR "@PREFIX@"
+
+/* PHP Runtime Configuration */
+#define DEFAULT_SHORT_OPEN_TAG "@DEFAULT_SHORT_OPEN_TAG@"
+
+/* Platform-Specific Configuration. Should not be changed. */
+
+/* Alignment for Zend memory allocator */
+
+/* Number of bytes for the ZEND_MM alignment. */
+#define ZEND_MM_ALIGNMENT (size_t)8
+
+/* Number of bytes for the logarithmic ZEND_MM alignment. */
+#define ZEND_MM_ALIGNMENT_LOG2 (size_t)3
+
+/* Define to 1 if ZEND_MM needs 8-byte realignment, and to 0 if not. */
+#define ZEND_MM_NEED_EIGHT_BYTE_REALIGNMENT 0
+
+#define PHP_SIGCHILD 0
+#define HAVE_GETSERVBYNAME 1
+#define HAVE_GETSERVBYPORT 1
+#define HAVE_GETPROTOBYNAME 1
+#define HAVE_GETPROTOBYNUMBER 1
+#define HAVE_GETHOSTNAME 1
+#define STDIN_FILENO 0
+#define STDOUT_FILENO 1
+#define STDERR_FILENO 2
+#undef HAVE_ADABAS
+#undef HAVE_SOLID
+#undef HAVE_SYMLINK
+
+/* its in win32/time.c */
+#define HAVE_USLEEP 1
+#define HAVE_NANOSLEEP 1
+
+#define HAVE_GETCWD 1
+#undef HAVE_SETITIMER
+#undef HAVE_IODBC
+#define HAVE_LIBDL 1
+#define HAVE_GETTIMEOFDAY 1
+#define HAVE_PUTENV 1
+#define HAVE_TZSET 1
+#undef HAVE_FLOCK
+#define HAVE_ALLOCA 1
+#undef HAVE_SYS_TIME_H
+#undef HAVE_STRUCT_STAT_ST_BLKSIZE
+#undef HAVE_STRUCT_STAT_ST_BLOCKS
+#define HAVE_STRUCT_STAT_ST_RDEV 1
+#define HAVE_GETLOGIN 1
+#define HAVE_SHUTDOWN 1
+#define HAVE_STRCASECMP 1
+
+/* Define to 1 if you have the 'strcasestr' function. */
+#cmakedefine HAVE_STRCASESTR 1
+
+/* Define to 1 if you have the 'strndup' function. */
+#cmakedefine HAVE_STRNDUP 1
+
+/* Define to 1 if you have the 'utimes' function. */
+#cmakedefine HAVE_UTIMES 1
+
+#define HAVE_UTIME 1
+#undef HAVE_DIRENT_H
+#define HAVE_FCNTL_H 1
+#define HAVE_GRP_H 0
+#undef HAVE_PWD_H
+#undef HAVE_SYS_FILE_H
+#undef HAVE_SYS_SOCKET_H
+#undef HAVE_SYS_WAIT_H
+#define HAVE_SYSLOG_H 1
+#undef HAVE_UNISTD_H
+#define HAVE_SYS_TYPES_H 1
+#undef HAVE_ALLOCA_H
+#undef HAVE_KILL
+#define HAVE_GETPID 1
+/* int and long are still 32bit in 64bit compiles */
+#define SIZEOF_INT 4
+#define SIZEOF_LONG 4
+/* MSVC.6/NET don't allow 'long long' or know 'intmax_t' */
+#define SIZEOF_LONG_LONG 8 /* defined as __int64 */
+#define SIZEOF_INTMAX_T 0
+#define ssize_t SSIZE_T
+#ifdef _WIN64
+# define SIZEOF_SIZE_T 8
+# define SIZEOF_PTRDIFF_T 8
+#else
+# define SIZEOF_SIZE_T 4
+# define SIZEOF_PTRDIFF_T 4
+#endif
+#define SIZEOF_OFF_T 4
+
+/* Define to 1 if your system has a working POSIX 'fnmatch' function. */
+#define HAVE_FNMATCH 1
+
+#define HAVE_GLOB
+#define PHP_SHLIB_SUFFIX "dll"
+#define PHP_SHLIB_EXT_PREFIX "php_"
+#define HAVE_SQLDATASOURCES
+
+/* Win32 supports socketpair by the emulation in win32/sockets.c */
+#define HAVE_SOCKETPAIR 1
+#define HAVE_SOCKLEN_T 1
+
+/* Define to 1 if your system has fork/vfork/CreateProcess. */
+#cmakedefine PHP_CAN_SUPPORT_PROC_OPEN 1
+
+/* vs.net 2005 has a 64-bit time_t.  This will likely break
+ * 3rdParty libs that were built with older compilers; switch
+ * back to 32-bit */
+#ifndef _WIN64
+# define _USE_32BIT_TIME_T 1
+#endif
+
+#define _REENTRANT 1
+
+#define HAVE_GETRUSAGE
+
+#define HAVE_FTOK 1
+
+#define HAVE_NICE
+
+/* Define to 1 if the system has the 'ifunc' function attribute */
+#cmakedefine HAVE_FUNC_ATTRIBUTE_IFUNC 1
+
+/* Define to 1 if the system has the 'target' function attribute */
+#cmakedefine HAVE_FUNC_ATTRIBUTE_TARGET 1
+
+/* Define to 1 if the system has the 'visibility' function attribute */
+#cmakedefine HAVE_FUNC_ATTRIBUTE_VISIBILITY 1
+
+/* Define to 1 if you have the 'getaddrinfo' function. */
+#cmakedefine HAVE_GETADDRINFO 1
+
+/* values determined by configure.js */
+
+/* Windows build system version */
+#cmakedefine PHP_BUILD_SYSTEM "@PHP_BUILD_SYSTEM@"
+
+/* Configure line */
+#cmakedefine CONFIGURE_COMMAND "@CONFIGURE_COMMAND@"
+
+/* Detected compiler version */
+#cmakedefine PHP_BUILD_COMPILER "@PHP_BUILD_COMPILER@"
+
+/* Compiler compatibility ID */
+#cmakedefine PHP_COMPILER_ID "@PHP_COMPILER_ID@"
+
+/* Detected compiler architecture */
+#cmakedefine PHP_BUILD_ARCH "@PHP_BUILD_ARCH@"
+
+/* Linker major version */
+#define PHP_LINKER_MAJOR 14
+
+/* Linker minor version */
+#define PHP_LINKER_MINOR 38
+
+#define HAVE_STRNLEN 1
+
+/* Define to 1 if checking the stack limit is supported. */
+#cmakedefine ZEND_CHECK_STACK_LIMIT 1
+
+/* have the wspiapi.h header file */
+#define HAVE_WSPIAPI_H 1
+
+#define HAVE_GAI_STRERROR 1
+
+/* Define to 1 if IPv6 is enabled and supported. */
+#cmakedefine HAVE_IPV6 1
+
+#define __SSE__ 1
+
+#define __SSE2__ 1
+
+/* Whether fopencookie seeker uses off64_t. */
+#cmakedefine COOKIE_SEEKER_USES_OFF64_T 1
+
+/* Define to 1 if you have the 'fopencookie' function. */
+#cmakedefine HAVE_FOPENCOOKIE 1
+
+/* Define to 1 if the compiler supports AVX-512. */
+#cmakedefine PHP_HAVE_AVX512_SUPPORTS 1
+
+/* Define to 1 if the compiler supports AVX-512 VBMI. */
+#cmakedefine PHP_HAVE_AVX512_VBMI_SUPPORTS 1
+
+/* Define to 1 if you have the 'arc4random_buf' function. */
+#cmakedefine HAVE_ARC4RANDOM_BUF 1
+
+/* Have BCMATH library */
+#cmakedefine HAVE_BCMATH 1
+
+/* Define to 1 if you have the 'bind_textdomain_codeset' function. */
+#cmakedefine HAVE_BIND_TEXTDOMAIN_CODESET 1
+
+/* */
+#cmakedefine HAVE_BUILD_DEFS_H 1
+
+/* Have BZ2 library */
+#cmakedefine HAVE_BZ2 1
+
+/* Have calendar */
+#cmakedefine HAVE_CALENDAR 1
+
+/* Have COM_DOTNET support */
+#cmakedefine HAVE_COM_DOTNET 1
+
+/* have the mscoree.h header file */
+#cmakedefine HAVE_MSCOREE_H 1
+
+/* Define to 1 if Capstone is available. */
+#cmakedefine HAVE_CAPSTONE 1
+
+/* Have ctype */
+#cmakedefine HAVE_CTYPE 1
+
+/* Define to 1 if curl extension is available. */
+#cmakedefine HAVE_CURL 1
+
+/* Define to 1 if libcurl is linked against old OpenSSL < 1.1. */
+#cmakedefine HAVE_CURL_OLD_OPENSSL 1
+
+/* Have timelib_config.h */
+#cmakedefine HAVE_TIMELIB_CONFIG_H 1
+
+/* Define to 1 if you have the 'dcngettext' function. */
+#cmakedefine HAVE_DCNGETTEXT 1
+
+/* Define to 1 if you have the 'dngettext' function. */
+#cmakedefine HAVE_DNGETTEXT 1
+
+/* Define to 1 if dom extension is available. */
+#cmakedefine HAVE_DOM 1
+
+/* */
+#cmakedefine HAVE_ENCHANT 1
+
+/* enchant_broker_set_param since 1.5.0 and removed in 2.x */
+#cmakedefine HAVE_ENCHANT_BROKER_SET_PARAM 1
+
+/* enchant_get_version since 1.6.0 */
+#cmakedefine HAVE_ENCHANT_GET_VERSION 1
+
+/* Define to 1 if edit/readline library has 'rl_erase_empty_line' variable. */
+#cmakedefine HAVE_ERASE_EMPTY_LINE 1
+
+/* Have EXIF Support */
+#cmakedefine HAVE_EXIF 1
+
+/* ffi support enabled */
+#cmakedefine HAVE_FFI 1
+
+/* Whether libffi supports the 'FFI_FASTCALL' calling convention. */
+#cmakedefine HAVE_FFI_FASTCALL 1
+
+/* Whether libffi supports the 'FFI_MS_CDECL' calling convention. */
+#cmakedefine HAVE_FFI_MS_CDECL 1
+
+/* Whether libffi supports the 'FFI_PASCAL' calling convention. */
+#cmakedefine HAVE_FFI_PASCAL 1
+
+/* Whether libffi supports the 'FFI_REGISTER' calling convention. */
+#cmakedefine HAVE_FFI_REGISTER 1
+
+/* Whether libffi supports the 'FFI_STDCALL' calling convention. */
+#cmakedefine HAVE_FFI_STDCALL 1
+
+/* Whether libffi supports the 'FFI_SYSV' calling convention. */
+#cmakedefine HAVE_FFI_SYSV 1
+
+/* Whether libffi supports the 'FFI_THISCALL' calling convention. */
+#cmakedefine HAVE_FFI_THISCALL 1
+
+/* Whether libffi supports the 'FFI_VECTORCALL' calling convention. */
+#cmakedefine HAVE_FFI_VECTORCALL_PARTIAL 1
+
+/* Have FTP support */
+#cmakedefine HAVE_FTP 1
+
+/* Have FTP over SSL support */
+#cmakedefine HAVE_FTP_SSL 1
+
+#cmakedefine PHP_MHASH_BC 1
+
+/* Define to 1 if GD library has 'gdImageCreateFromAvif'. */
+#cmakedefine HAVE_GD_AVIF 1
+
+/* Define to 1 if GD library has 'gdImageCreateFromBmp'. */
+#cmakedefine HAVE_GD_BMP 1
+
+/* */
+#cmakedefine HAVE_GD_BUNDLED 1
+
+/* */
+#cmakedefine HAVE_GD_FREETYPE 1
+
+/* */
+#cmakedefine HAVE_GD_GET_INTERPOLATION 1
+
+/* Define to 1 if GD library has 'gdImageCreateFromJpeg'. */
+#cmakedefine HAVE_GD_JPG 1
+
+/* */
+#cmakedefine HAVE_GD_LIBVERSION 1
+
+/* Define to 1 if GD library has 'gdImageCreateFromPng'. */
+#cmakedefine HAVE_GD_PNG 1
+
+/* Define to 1 if GD library has 'gdImageCreateFromTga'. */
+#cmakedefine HAVE_GD_TGA 1
+
+/* Define to 1 if GD library has 'gdImageCreateFromWebp'. */
+#cmakedefine HAVE_GD_WEBP 1
+
+/* Define to 1 if GD library has 'gdImageCreateFromXpm'. */
+#cmakedefine HAVE_GD_XPM 1
+
+/* */
+#cmakedefine HAVE_LIBAVIF 1
+
+/* */
+#cmakedefine HAVE_LIBFREETYPE 1
+
+/* */
+#cmakedefine HAVE_LIBGD 1
+
+/* Define to 1 if you have the 'intl' library. */
+#cmakedefine HAVE_LIBINTL 1
+
+/* */
+#cmakedefine HAVE_LIBJPEG 1
+
+/* */
+#cmakedefine HAVE_LIBPNG 1
+
+/* */
+#cmakedefine HAVE_LIBWEBP 1
+
+/* Define to 1 if you have the 'ngettext' function. */
+#cmakedefine HAVE_NGETTEXT 1
+
+/* Whether to build PostgreSQL support or not */
+#cmakedefine HAVE_PGSQL 1
+
+/* Whether to build PostgreSQL for PDO support or not */
+#cmakedefine HAVE_PDO_PGSQL 1
+
+/* */
+#cmakedefine HAVE_XPM 1
+
+/* */
+#cmakedefine JISX0208 1
+
+/* */
+#cmakedefine USE_GD_JISX0208 1
+
+/* have the zlib.h header file */
+#define HAVE_ZLIB_H 0
+
+/* Define to enable JIT */
+#cmakedefine HAVE_JIT 1
+
+/* Define to 1 if libxml extension is available. */
+#cmakedefine HAVE_LIBXML 1
+
+/* Have mbstring support */
+#cmakedefine HAVE_MBSTRING 1
+
+/* whether to have multibyte regex support */
+#cmakedefine HAVE_MBREGEX 1
+
+/* Define to 1 if oniguruma has an invalid entry for KOI8 encoding. */
+#cmakedefine PHP_ONIG_BAD_KOI8_ENTRY 1
+
+/* Define to 1 if mysqlnd has compressed protocol support. */
+#cmakedefine MYSQLND_COMPRESSION_ENABLED 1
+
+/* Define to 1 if mysqlnd has extended SSL support through OpenSSL. */
+#cmakedefine MYSQLND_HAVE_SSL 1
+
+/* Enable core mysqlnd SSL code */
+#cmakedefine MYSQLND_SSL_SUPPORTED 1
+
+/* Load legacy algorithm provider in addition to default provider */
+#cmakedefine LOAD_OPENSSL_LEGACY_PROVIDER 1
+
+/* Define to 1 if you have the SysV IPC SHM support. */
+#cmakedefine HAVE_SHM_IPC 1
+
+/* Define to 1 if you have the mmap(MAP_ANON) SHM support. */
+#cmakedefine HAVE_SHM_MMAP_ANON 1
+
+/* Define if you have POSIX mmap() SHM support */
+#cmakedefine HAVE_SHM_MMAP_POSIX 1
+
+/* Define to 1 if you have the <openssl/crypto.h> header file. */
+#cmakedefine HAVE_OPENSSL_CRYPTO_H 1
+
+/* Define to 1 if the openssl extension is available. */
+#cmakedefine HAVE_OPENSSL_EXT 1
+
+/* Define to 1 if OpenSSL crypto library has the 'RAND_egd' function. */
+#cmakedefine HAVE_RAND_EGD 1
+
+/* Use system default cipher list instead of hardcoded value */
+#cmakedefine USE_OPENSSL_SYSTEM_CIPHERS 1
+
+/* Using bundled PCRE library */
+#cmakedefine HAVE_BUNDLED_PCRE 1
+
+/* Number of bits in non-UTF mode for PCRE library. */
+#cmakedefine PCRE2_CODE_UNIT_WIDTH @PCRE2_CODE_UNIT_WIDTH@
+
+/* Whether a static PCRE library is linked */
+#cmakedefine PCRE2_STATIC 1
+
+/* Define to 1 if PCRE JIT is enabled and supported. */
+#cmakedefine HAVE_PCRE_JIT_SUPPORT 1
+
+/* Define to 1 if PGVerbosity enum has PQERRORS_SQLSTATE. */
+#cmakedefine HAVE_PQERRORS_SQLSTATE 1
+
+/* Define to 1 if you have a working ttyname_r. */
+#cmakedefine HAVE_TTYNAME_R 1
+
+/* have sqlite3_close_v2 */
+#cmakedefine HAVE_SQLITE3_CLOSE_V2 1
+
+/* have sqlite3_column_table_name */
+#cmakedefine HAVE_SQLITE3_COLUMN_TABLE_NAME 1
+
+/* Sqlite3 without extension support */
+#cmakedefine PDO_SQLITE_OMIT_LOAD_EXTENSION 1
+
+/* */
+#cmakedefine PHAR_HAVE_OPENSSL 1
+
+/* Whether to build phar as dynamic module */
+#cmakedefine COMPILE_DL_PHAR 1
+
+/* */
+#cmakedefine HAVE_LIBEDIT 1
+
+/* PostgreSQL 17 or later */
+#cmakedefine HAVE_PG_CHANGE_PASSWORD 1
+
+/* PostgreSQL 12 or later */
+#cmakedefine HAVE_PG_RESULT_MEMORY_SIZE 1
+
+/* PostgreSQL 17 or later */
+#cmakedefine HAVE_PG_SET_CHUNKED_ROWS_SIZE 1
+
+/* PostgreSQL 17 or later */
+#cmakedefine HAVE_PG_SOCKET_POLL 1
+
+/* */
+#cmakedefine HAVE_LIBEXPAT 1
+
+/* Have SHMOP support */
+#cmakedefine HAVE_SHMOP 1
+
+/* Define to 1 if simplexml extension is available. */
+#cmakedefine HAVE_SIMPLEXML 1
+
+#cmakedefine HAVE_SYSVSHM 1
+
+/* Session support */
+#cmakedefine HAVE_PHP_SESSION 1
+
+/* Define to 1 if soap extension is available. */
+#cmakedefine HAVE_SOAP 1
+
+#cmakedefine HAVE_SOCKETS 1
+
+/* Whether you have libmm */
+#cmakedefine HAVE_LIBMM 1
+
+/* Have the Sodium library */
+#cmakedefine HAVE_LIBSODIUMLIB 1
+
+/* Define to 1 if you have the sqlite3 extension enabled. */
+#cmakedefine HAVE_SQLITE3 1
+
+/* Define to 1 if SQLite library has the 'sqlite3_errstr' function. */
+#cmakedefine HAVE_SQLITE3_ERRSTR 1
+
+/* Define to 1 if SQLite library has the 'sqlite3_expanded_sql' function. */
+#cmakedefine HAVE_SQLITE3_EXPANDED_SQL 1
+
+/* Sqlite3 without extension support */
+#cmakedefine SQLITE_OMIT_LOAD_EXTENSION 1
+
+/* Define to 1 if xml extension is available. */
+#cmakedefine HAVE_XML 1
+
+/* Define to 1 if xmlreader extension is available. */
+#cmakedefine HAVE_XMLREADER 1
+
+/* Define to 1 if xmlwriter extension is available. */
+#cmakedefine HAVE_XMLWRITER 1
+
+/* Define if xsl extension is enabled */
+#cmakedefine HAVE_XSL 1
+
+/* */
+#cmakedefine HAVE_XSL_EXSLT 1
+
+/* */
+#cmakedefine HAVE_ZIP 1
+
+/* */
+#cmakedefine ZIP_STATIC 1
+
+/* Libzip >= 1.0.0 with zip_file_set_mtime */
+#cmakedefine HAVE_SET_MTIME 1
+
+/* Libzip >= 1.2.0 with encryption support */
+#cmakedefine HAVE_ENCRYPTION 1
+
+/* Libzip >= 1.3.1 with zip_libzip_version function */
+#cmakedefine HAVE_LIBZIP_VERSION 1
+
+/* Libzip >= 1.3.0 with zip_register_progress_callback_with_state function */
+#cmakedefine HAVE_PROGRESS_CALLBACK 1
+
+/* Libzip >= 1.6.0 with zip_register_cancel_callback_with_state function */
+#cmakedefine HAVE_CANCEL_CALLBACK 1
+
+/* Libzip >= 1.7.0 with zip_*_method_supported functions */
+#cmakedefine HAVE_METHOD_SUPPORTED 1
+
+/* Define to 1 if zlib extension is available. */
+#cmakedefine HAVE_ZLIB 1
+
+#define PHP_CONFIG_FILE_SCAN_DIR "@PHP_CONFIG_FILE_SCAN_DIR@"
+
+/* Define to 1 if PHP uses its own crypt_r, and to 0 if using the external
+   crypt library. */
+#cmakedefine01 PHP_USE_PHP_CRYPT_R 1
+
+/* Define to 1 if you have the 'clock_gettime' function. */
+#cmakedefine HAVE_CLOCK_GETTIME 1
+
+/* Define to 1 if you have the 'clock_get_time' function. */
+#cmakedefine HAVE_CLOCK_GET_TIME 1
+
+#if __has_include("main/config.pickle.h")
+#include "main/config.pickle.h"
+#endif
